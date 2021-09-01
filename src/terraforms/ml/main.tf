@@ -59,7 +59,7 @@ resource "azurerm_machine_learning_compute_instance" "computeinstance" {
   name                          = var.ml_compute_instance_name
   location                      = azurerm_resource_group.rg.location
   machine_learning_workspace_id = azurerm_machine_learning_workspace.mlw.id
-  virtual_machine_size          = "Standard_F32s_v2"
+  virtual_machine_size          = "Standard_F16s_v2"
   authorization_type            = "personal"
   ssh {
     public_key = var.ssh_key

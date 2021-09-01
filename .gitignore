@@ -127,3 +127,22 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Data folders
+src/backup
+src/MPD
+src/MPD_CSV
+src/MPD_TEST
+src/model
+
+# Temporal notebooks
+*.temporal.ipynb
+
+# Terraform
+*.tfstate
+*.tfstate.backup
+.terraform*
+tfplan
+
+# Temporal folders
+.tmp/
