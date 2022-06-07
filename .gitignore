@@ -149,3 +149,10 @@ tfplan
 
 # Azure Data
 src/.azureml
+
+# Azure Functions
+.git*
+.vscode
+local.settings.json
+test
+.venv
