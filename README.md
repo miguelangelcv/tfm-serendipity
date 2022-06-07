@@ -24,8 +24,6 @@
 <!-- ABOUT THE PROJECT -->
 ## Acerca del proyecto
 
-<br>
-
 ### Resumen
 
 En la actualidad, compartir y descubrir nueva música resulta muy sencillo dada la cantidad de servicios de música en streaming (_Spotify_, _YouTube Music_, _Apple Music_…) o redes sociales musicales (_Last.fm_).
@@ -38,6 +36,8 @@ como recomendación a otra playlist que estamos escuchando.
 
 El objetivo de este proyecto es proporcionar un sistema que, dada una playlist, mediante su título, canciones que la conforman y otras características dadas, encuentre otras playlists similares entre los distintos usuarios de _Spotify_ para ofrecer al usuario.
 
+<br>
+
 ### Autoría
 <u>Alumno</u>:
 * Miguel Ángel Cantero Víllora
@@ -48,18 +48,21 @@ El objetivo de este proyecto es proporcionar un sistema que, dada una playlist, 
 
 <p align="right">(<a href="#top">volver al inicio</a>)</p>
 
+<br>
 
 ## Tecnologías empleadas
-
-<br>
 
 ### Lenguajes
 * __Python__: Ciencia de datos y servicio web
 * __HTML__ y __C#__: Aplicación web 
 
+<br>
+
 ### Herramientas de desarrollo 
 * __Jupyter Notebook__: Entorno de programación interactivo, mediante el cual podemos introducir texto en formato _markdown_ junto a código _Python_ haciendo uso de los _notebooks_ o libretas.
 * __Visual Studio Code__: Conocido editor de código de _Microsoft_, el cual ha sido empleado a la hora de visualizar los archivos creados para almacenar los datos, tanto en formato _CSV_ como _JSON_, para el desarrollo de scripts empleados para ejecutar los procesos relacionados con la recopilación de datos y el entrenamiento del modelo, y para desarrollar la aplicación web y la _API REST_.
+
+<br>
 
 ### Bibliotecas
 * __Spotipy__: Biblioteca de Python para usar la WebAPI de Spotify.
@@ -74,6 +77,7 @@ ciencia e ingeniería.
 * __.NET 5__: Framework multiplataforma gratuito y open source que nos permite el desarrollo de aplicaciónes. En particular utilizaremos Blazor, que viene integrado en el
 framework ,y es un completo marco de trabajo para compilar aplicaciones web.
 
+<br>
 
 ### Servicios en la nube
 Para desplegar la infraestructura, se ha utilizado _Microsoft Azure_ como proveedor de servicios en la nube. Los servicios empleados son los siguientes:
