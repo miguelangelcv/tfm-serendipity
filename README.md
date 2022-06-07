@@ -46,8 +46,6 @@ El objetivo de este proyecto es proporcionar un sistema que, dada una playlist, 
 * José Antonio Gámez Martín
 * Juan Ángel Aledo Sánchez
 
-<p align="right">(<a href="#top">volver al inicio</a>)</p>
-
 <br>
 
 ## Tecnologías empleadas
@@ -89,5 +87,3 @@ Para desplegar la infraestructura, se ha utilizado _Microsoft Azure_ como provee
 * __Azure Blob Storage__: Solución de almacenamiento de objetos en la nube.
 * __Azure DevOps__: Servicio que proporciona control de versiones, informes, gestión de
 requisitos, gestión de proyectos, compilaciones automatizadas, pruebas y capacidades de gestión de versiones.
-
-<p align="right">(<a href="#top">volver al inicio</a>)</p>
