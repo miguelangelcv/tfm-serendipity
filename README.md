@@ -9,7 +9,7 @@
   <h3 align="center">Servicio web para la recomendación de playlists a partir de otra playlist</h3>
 
   <p align="center">
-    Trabajo de Fin de <a href="https://www.uclm.es/estudios/masteres/master-ingenieria-informatica-albacete">Máster para el Máster Universitario en Ingeniería Informática</a> de la <a href="https://www.uclm.es">Universidad de Castilla-La Mancha</a>
+    TFM para el <a href="https://www.uclm.es/estudios/masteres/master-ingenieria-informatica-albacete">Máster Universitario en Ingeniería Informática</a> de la <a href="https://www.uclm.es">Universidad de Castilla-La Mancha</a>
     <br />
     <br />
     <a href="docs/MEMORIA_TFM_SERENDIPITY.pdf">Memoria del proyecto</a>
