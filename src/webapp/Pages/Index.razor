@@ -1,0 +1,89 @@
+﻿@page "/"
+@inject Data.LoginState loginState
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    /* Create two equal columns that floats next to each other */
+    .column {
+        float: left;
+        width: 50%;
+        padding: 10px;
+        height: 300px; /* Should be removed. Only for demonstration */
+    }
+
+    /* Clear floats after the columns */
+    .row:after {
+        content: "";
+        display: table;
+        clear: both;
+    }
+
+    .rectangle {
+        width: 125px;
+        height: 125px;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        border-radius: 5px;
+        background-color: #fff;
+        position: relative;
+    }
+</style>
+
+
+<h1 style="text-align:center">¡Bienvenido a Serendipity!</h1>
+@if (loginState.IsLoggedIn.Equals(false))
+{
+    <p style="text-align:center">
+        Inicia sesión en Spotify para acceder al sistema de recomendación de playlists 
+        (Se requiere de autorización para la lectura y escritura de playlists)
+    </p>
+}
+else
+{
+    <p style="text-align:center">.</p>
+}
+
+<p style="margin-top:32px; margin-bottom:48px;">Serendipity es un sistema de recomendación de playlists para usuarios de Spotify. 
+    Este servicio te permite obtener recomendaciones a partir de las siguientes funcionalidades:</p>
+
+
+<div class="d-flex justify-content-center" style="width:100%;">
+    <div class="d-flex justify-content-center" style="margin-right: 32px; margin-left: 32px;">
+        <div>
+            <p style="text-align:center">
+                <span class="oi oi-musical-note" aria-hidden="true" style="font-size: 75px;"></span>
+            </p>
+            <h4 style="text-align:center">Mis playlists</h4>
+            <p>
+                Obten recomendaciones sobre las playlist de tu colección.
+            </p>
+        </div>
+    </div>
+    <div class="d-flex justify-content-center" style="margin-right: 32px; margin-left: 32px;">
+        <div>
+            <p style="text-align:center">
+                <span class="oi oi-star" aria-hidden="true" style="font-size: 75px;"></span>
+            </p>
+            <h4 style="text-align:center">¡Voy a tener suerte!</h4>
+            <p>
+                Obten una playlist relacionada con el título indicado.
+            </p>
+        </div>
+    </div>
+</div>
+
+@code
+{
+
+    protected override void OnInitialized()
+    {
+        loginState.OnChange += StateHasChanged;
+    }
+    public void Dispose()
+    {
+        loginState.OnChange -= StateHasChanged;
+    }
+}

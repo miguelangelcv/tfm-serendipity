@@ -1,0 +1,91 @@
+﻿@using SpotifyAPI.Web
+@using System
+@using Microsoft.Extensions.Configuration
+
+@inherits LayoutComponentBase
+@inject IConfiguration Configuration
+@inject NavigationManager navManager
+@inject Data.LoginState loginState
+
+
+<style>
+    .filter-white {
+        filter: invert(100%) sepia(100%) saturate(20%) hue-rotate(352deg) brightness(103%) contrast(100%);
+    }
+</style>
+
+<div class="page">
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="top-row px-4">
+            @if (_isAuthed && _me != null)
+            {
+                <a class="ml-md-auto">@_me.DisplayName</a>
+                <a/>
+                <img src="@_me.Images[0].Url" height="32" width="32" />
+            }
+            else
+            {
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <button type="button" class="btn btn-success" @onclick="SpotifyLogin">
+                        <img src="images/spotify.svg" height="16" width="16" class="filter-white" />
+                        Iniciar sesión
+                    </button>
+                </div>
+            }
+
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+</div>
+
+@code {
+    private bool _isAuthed = false;
+    private PrivateUser _me;
+    private Uri _authUri;
+
+
+    private void SpotifyLogin()
+    {
+        navManager.NavigateTo(_authUri.AbsoluteUri);
+    }
+
+    protected override void OnInitialized()
+    {
+        if (!string.IsNullOrEmpty(Configuration["SPOTIFY_CLIENT_ID"]))
+        {
+            var baseUri = navManager.ToAbsoluteUri(navManager.BaseUri);
+
+            var loginRequest = new LoginRequest(baseUri, Configuration["SPOTIFY_CLIENT_ID"], LoginRequest.ResponseType.Token)
+            {
+                Scope = new[] { Scopes.PlaylistModifyPrivate, Scopes.PlaylistModifyPublic }
+            };
+            _authUri = loginRequest.ToUri();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var uri = new Uri(navManager.Uri);
+        var maxLen = Math.Min(1, uri.Fragment.Length);
+        Dictionary<string, string> fragmentParams = uri.Fragment.Substring(maxLen)?
+          .Split("&", StringSplitOptions.RemoveEmptyEntries)?
+          .Select(param => param.Split("=", StringSplitOptions.RemoveEmptyEntries))?
+          .ToDictionary(param => param[0], param => param[1]) ?? new Dictionary<string, string>();
+
+        _isAuthed = fragmentParams.ContainsKey("access_token");
+        if (_isAuthed)
+        {
+            var spotify = new SpotifyClient(fragmentParams["access_token"]);
+
+            _me = await spotify.UserProfile.Current();
+            loginState.SetLogin(_isAuthed, _me.Id, _me.DisplayName, fragmentParams["access_token"]);
+        }
+    }
+}

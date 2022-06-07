@@ -1,0 +1,159 @@
+﻿@page "/getlucky"
+@using System.Net.Http
+@using System.Text
+@using Newtonsoft.Json
+@using System.Threading.Tasks
+@using SerendipityWebApp.Models
+@using System.Collections
+@using SerendipityWebApp.Components
+@inject HttpClient Http
+@inject Data.LoginState loginState
+
+<style>
+    .filter-white {
+        filter: invert(100%) sepia(100%) saturate(20%) hue-rotate(352deg) brightness(103%) contrast(100%);
+    }
+
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+<h1>¡Voy a tener suerte!</h1>
+
+<Modal @ref="SuccessModal"></Modal>
+
+<div style="margin-bottom:16px; margin-top:16px;">
+    <label style="margin-right:8px;">
+        Introduce un título para obtener una recomendación:
+    </label>
+    <div class="row">
+        <div class="col">
+            <input class="form-control" type="text" @bind="_inputValue" />
+        </div>
+        <div class="col">
+            @if (!_isLoading)
+            {
+                <button class="btn btn-primary" @onclick="RecommendPlaylist">Recomendar</button>
+            }
+            else
+            {
+                <button class="btn btn-primary" type="button" disabled>
+                    <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true" style="margin-right:8px"></span>
+                    Loading...
+                </button>
+            }
+        </div>
+    </div>
+    <p></p>
+    @if (_luckyPlaylist?.Tracks.Count > 0 && !_isLoading && _inputValue.Length != 0)
+    {
+        @if (loginState.IsLoggedIn)
+        {
+            if (!_addedPlaylist)
+            {
+                <div class="center">
+                    <button type="button" class="btn btn-success" @onclick="AddPlaylist">
+                        <img src="images/spotify.svg" height="16" width="16" class="filter-white" style="margin-right:8px;" />
+                        Añadir playlist "<span>@_luckyPlaylist.Name</span>"
+                    </button>
+                </div>
+            }
+            <p></p>
+        }
+        <ol class="list-group list-group-numbered">
+            @foreach (var track in _luckyPlaylist.Tracks)
+            {
+                <li class="list-group-item d-flex justify-content-between align-items-start">
+                    <div class="ms-2 me-auto">
+                        <div class="fw-bold">@track.Name</div>
+                        @track.Artist.Name
+                    </div>
+                    <span class="badge bg-primary rounded-pill">@GetYearFromDate(track.Album.ReleaseDate)</span>
+                </li>
+            }
+        </ol>
+    }
+</div>
+
+@code
+{
+    private string _inputValue;
+    private bool _isLoading = false;
+    private bool _addedPlaylist = false;
+    private Playlist _luckyPlaylist;
+    private Components.Modal SuccessModal { get; set; }
+
+    private async void RecommendPlaylist()
+    {
+        if (_inputValue?.Trim() != "")
+        {
+            _luckyPlaylist = new Playlist();
+            _addedPlaylist = false;
+            _isLoading = true;
+            var list = new ArrayList();
+            list.Add(new { name = _inputValue });
+
+            string j = JsonConvert.SerializeObject(list[0]);
+            var content = new StringContent(j.ToString(), Encoding.UTF8, "application/json");
+            var result = await Http.PostAsync("recomm/playlists", content);
+            if (result.IsSuccessStatusCode)
+            {
+                var jsonString = await result.Content.ReadAsStringAsync();
+                _luckyPlaylist.Name = _inputValue;
+                _luckyPlaylist.Tracks = JsonConvert.DeserializeObject<Playlist>(jsonString).Tracks;
+            }
+            _isLoading = false;
+            await InvokeAsync(() => { StateHasChanged(); });
+        }
+    }
+
+    private string GetYearFromDate(string text) => text?.Split('-')[0] ?? "";
+
+    private async void AddPlaylist()
+    {
+        var dict = new Dictionary<string, object>
+        {
+            { "user_id", loginState.UserId },
+            { "token", loginState.GetAccessToken() },
+            { "pl_name", _luckyPlaylist.Name },
+            { "pl_tracks", GetPlaylistIds(_luckyPlaylist) }
+        };
+
+
+        string j = JsonConvert.SerializeObject(dict);
+        var content = new StringContent(j.ToString(), Encoding.UTF8, "application/json");
+
+
+        var resultDict = new Dictionary<string, string>();
+        var result = await Http.PostAsync("spotify/playlists", content);
+
+        if (result.IsSuccessStatusCode)
+        {
+            var jsonString = await result.Content.ReadAsStringAsync();
+            resultDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString);
+
+            _addedPlaylist = true;
+            await InvokeAsync(() => { StateHasChanged(); });
+
+            SuccessModal.Title = "Nueva playlist";
+            SuccessModal.Body = $"La playlist '{_luckyPlaylist.Name}' ha sido añadida a tu colección. ¿Deseas verla en Spotify?";
+            SuccessModal.Uri = resultDict["pl_url"] ?? "";
+            SuccessModal.Open();
+        }
+    }
+
+    private List<string> GetPlaylistIds(Playlist pl)
+    {
+        var tracks = new List<string>();
+
+        foreach (var track in pl.Tracks)
+        {
+            tracks.Add(track.Id.Split(':').Last<string>());
+        }
+
+        return tracks;
+    }
+}

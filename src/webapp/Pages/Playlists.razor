@@ -1,0 +1,287 @@
+﻿@page "/playlists"
+
+@using Newtonsoft.Json
+@using Newtonsoft.Json.Linq
+@using SpotifyAPI.Web
+@using SerendipityWebApp.Components
+@using SerendipityWebApp.Models
+@using System.Text
+
+@inject Data.LoginState loginState
+@inject HttpClient Http
+
+<style>
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+<div>
+    <Modal @ref="SuccessModal"></Modal>
+
+    <div>
+        <h1>Mis playlists</h1>
+    </div>
+
+    @if (loginState.IsLoggedIn.Equals(false))
+    {
+        <p style="margin-bottom:32px; margin-top:32px;">
+            Inicia sesión en Spotify para acceder al sistema de recomendación de playlists
+        </p>
+    }
+    else
+    {
+        <div style="margin-bottom:16px; margin-top:16px;">
+            <label style="margin-right:8px;">
+                Selecciona una playlist:
+            </label>
+
+            <select name="playlists" @onchange="OnPlaylistSelected">
+                <option value="0"></option>
+                @foreach (var item in userPlaylists)
+                {
+                    <option value=@item.Id>@item.Name</option>
+                }
+            </select>
+        </div>
+
+        @if (_isLoading)
+        {
+            <div class="center" , style="margin-top:16px; margin-bottom:16px">
+                <div class="spinner-grow text-secondary" style="margin-left:4px;margin-right:4px" role="status">
+                    <span class="visually-hidden"></span>
+                </div>
+                <div class="spinner-grow text-secondary" style="margin-left:4px;margin-right:4px" role="status">
+                    <span class="visually-hidden"></span>
+                </div>
+                <div class="spinner-grow text-secondary" style="margin-left:4px;margin-right:4px" role="status">
+                    <span class="visually-hidden"></span>
+                </div>
+            </div>
+        }
+        else
+        {
+            <div style="margin-top:8px;">
+            @if (recommPlaylists.Count() != 0)
+            {
+                <TabControl>
+                    @foreach (var pl in recommPlaylists)
+                    {
+                        <TabPage Text=@("Playlist " + pl.Description)>
+                            <div>
+                                <div class="center">
+                                    <button type="button" style="margin-top:8px; margin-bottom:8px" class="btn btn-success" @onclick="() => AddPlaylist(pl)">
+                                        <img src="images/spotify.svg" height="16" width="16" class="filter-white" style="margin-right:8px;" />
+                                        Añadir playlist
+                                    </button>
+                                </div>
+                                <ol class="list-group list-group-numbered">
+                                    @foreach (var track in pl.Tracks)
+                                    {
+                                        <li class="list-group-item d-flex justify-content-between align-items-start">
+                                            <div class="ms-2 me-auto">
+                                                <div class="fw-bold">@track.Name</div>
+                                                @track.Artist.Name
+                                            </div>
+                                            <span class="badge bg-primary rounded-pill">@GetYearFromDate(track.Album.ReleaseDate)</span>
+                                        </li>
+                                    }
+                                </ol>
+                            </div>
+                        </TabPage>
+                    }
+                </TabControl>
+            }
+        </div>
+        }
+    }
+
+</div>
+
+
+@code
+{
+    SpotifyClient spotify;
+    private bool _isLoading = false;
+    private int currentCount = 0;
+    List<string> st = new List<string>();
+    List<SimplePlaylist> userPlaylists = new List<SimplePlaylist>();
+    Playlist selectedPlaylist = new Playlist();
+    List<Playlist> recommPlaylists = new List<Playlist>();
+    private Components.Modal SuccessModal { get; set; }
+
+    protected override void OnInitialized()
+    {
+        loginState.OnChange += StateHasChanged;
+        base.OnInitialized();
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        spotify = new SpotifyClient(loginState.GetAccessToken());
+        if (loginState.IsLoggedIn != false)
+            userPlaylists = await Task.Run(() => GetUserPlaylists(spotify));
+    }
+
+    public void Dispose()
+    {
+        loginState.OnChange -= StateHasChanged;
+    }
+
+    private async Task<List<SimplePlaylist>> GetUserPlaylists(SpotifyClient spotifyClient)
+    {
+        var plQuery = await spotify.Playlists.CurrentUsers();
+        return plQuery.Items;
+    }
+
+    private async void OnPlaylistSelected(ChangeEventArgs e)
+    {
+        _isLoading = true;
+        selectedPlaylist = new Playlist();
+        string selectedId = e.Value.ToString();
+        selectedPlaylist = await DownloadPlaylist(selectedId);
+        Playlist similarPl = await GetSimilarPlaylist(selectedPlaylist);
+        if (similarPl.Id != null)
+        {
+            // Hay similar
+            recommPlaylists = await GetRecommendedPlaylists(similarPl);
+        }
+        else
+        {
+            recommPlaylists = new List<Playlist>();
+        }
+        _isLoading = false;
+        await InvokeAsync(() => {StateHasChanged();});
+    }
+
+    private async Task<List<Playlist>> GetRecommendedPlaylists(Playlist pl)
+    {
+        var listPls = new List<Playlist>();
+        var result = await Http.GetAsync($"recomm/playlists/{pl.Pid}");
+
+        if (result.IsSuccessStatusCode)
+        {
+            string jResult = await result.Content.ReadAsStringAsync();
+            listPls = JsonConvert.DeserializeObject<List<Playlist>>(jResult);
+
+            int i = 0;
+            foreach (Playlist p in listPls)
+            {
+                p.Description = i.ToString();
+                i += 1;
+            }
+        }
+
+        return listPls;
+    }
+
+    private async Task<Playlist> GetSimilarPlaylist(Playlist pl)
+    {
+        var dict = new Dictionary<string, object>
+    {
+            { "name", pl.Name },
+            { "tracks", GetPlaylistIds(pl) }
+        };
+
+        string j = JsonConvert.SerializeObject(dict);
+        var content = new StringContent(j.ToString(), Encoding.UTF8, "application/json");
+        var result = await Http.PostAsync("playlists/equivalent", content);
+
+        var resultPl = new Playlist();
+        if (result.IsSuccessStatusCode)
+        {
+            string jResult = await result.Content.ReadAsStringAsync();
+            resultPl = JsonConvert.DeserializeObject<Playlist>(jResult);
+        }
+
+        return resultPl;
+    }
+
+    private List<string> GetPlaylistIds(Playlist pl)
+    {
+        var tracks = new List<string>();
+
+        foreach (var track in pl.Tracks)
+        {
+            tracks.Add(track.Id.Split(':').Last<string>());
+        }
+
+        return tracks;
+    }
+
+    private async Task<Playlist> DownloadPlaylist(string id)
+    {
+        var playlist = new Playlist();
+
+        var plInfo = await spotify.Playlists.Get(id);
+        playlist.Name = plInfo.Name;
+        playlist.Id = plInfo.Id;
+
+        var tracks = new List<Track>();
+        foreach (var item in plInfo.Tracks.Items)
+        {
+            if (item.Track is FullTrack track)
+            {
+                var tr = new Track()
+                {
+                    Id = track.Id,
+                    Name = track.Name,
+                    Album = new Album()
+                    {
+                        Id = track.Album.Id,
+                        Name = track.Album.Name,
+                        ArtistId = track.Album.Artists[0].Id,
+                        ReleaseDate = track.Album.ReleaseDate
+                    },
+                    Artist = new Artist()
+                    {
+                        Id = track.Artists[0].Id,
+                        Name = track.Artists[0].Name
+                    }
+                };
+                tracks.Add(tr);
+            }
+        }
+        playlist.Tracks = tracks;
+
+        return playlist;
+
+    }
+
+    private string GetYearFromDate(string text) => text?.Split('-')[0] ?? "";
+
+    private async void AddPlaylist(Playlist pl)
+    {
+        var dict = new Dictionary<string, object>
+        {
+            { "user_id", loginState.UserId },
+            { "token", loginState.GetAccessToken() },
+            { "pl_name", pl.Name + " (Serendipity)" },
+            { "pl_tracks", GetPlaylistIds(pl) }
+        };
+
+
+        string j = JsonConvert.SerializeObject(dict);
+        var content = new StringContent(j.ToString(), Encoding.UTF8, "application/json");
+
+
+        var resultDict = new Dictionary<string, string>();
+        var result = await Http.PostAsync("spotify/playlists", content);
+
+        if (result.IsSuccessStatusCode)
+        {
+            var jsonString = await result.Content.ReadAsStringAsync();
+            resultDict = JsonConvert.DeserializeObject<Dictionary<string, string>>(jsonString);
+
+            //_addedPlaylist = true;
+            await InvokeAsync(() => { StateHasChanged(); });
+
+            SuccessModal.Title = "Nueva playlist";
+            SuccessModal.Body = $"La playlist '{pl.Name + " (Serendipity)"}' ha sido añadida a tu colección. ¿Deseas verla en Spotify?";
+            SuccessModal.Uri = resultDict["pl_url"] ?? "";
+            SuccessModal.Open();
+        }
+    }
+}
