@@ -1,0 +1,7 @@
+numpy
+lightfm
+azureml 
+azureml.core 
+azureml-core 
+azure.cli.core
+tqdm
