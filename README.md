@@ -20,11 +20,12 @@
   </p>
 </div>
 
+<br>
 
 <!-- ABOUT THE PROJECT -->
-## Acerca del proyecto
+## Acerca del proyecto / About the project
 
-### Resumen
+### Resumen / Abstract
 
 En la actualidad, compartir y descubrir nueva música resulta muy sencillo dada la cantidad de servicios de música en streaming (_Spotify_, _YouTube Music_, _Apple Music_…) o redes sociales musicales (_Last.fm_).
 
@@ -36,54 +37,24 @@ como recomendación a otra playlist que estamos escuchando.
 
 El objetivo de este proyecto es proporcionar un sistema que, dada una playlist, mediante su título, canciones que la conforman y otras características dadas, encuentre otras playlists similares entre los distintos usuarios de _Spotify_ para ofrecer al usuario.
 
+---
+
+Nowadays, sharing and discovering new music is very easy, given the number of music streaming services such as _Spotify_, _YouTube Music_, _Apple Music_, ... or social music networks like _Last.fm_.
+
+Before the rise of the Internet and the emergence of music streaming services, the most common ways to discover new music were limited to radio and media sharing (such as cassettes or CDs). Focusing on this last way, it was very common to exchange compilations between friends with similar tastes to discover new songs. These recordings, in some cases, could be special compilations to reproduce while carrying out activities such as doing sports, studying, traveling, ... Currently this type of compilation has been replaced by musical playlists, where each user adds the songs they like grouped by a given title related with the content.
+
+All of the music streaming services provide us with very easy ways for finding related song to the one that is currently playing, and they also offer recommendations with the radios feature (blocks of songs, which can be randomly selected, related to the genre of the song or related artists). However, it is not so common to offer playlists from other users as a recommendation to a given playlist.
+
+The main aim of this project is to provide a system that, given a playlist, through its title, their songs and other characteristics, finds other similar playlists among the different _Spotify_ users to offer to a given user.
+
 <br>
 
-### Autoría
-<u>Alumno</u>:
+### Autor / Author
+<u>Alumno / Student </u>:
 * Miguel Ángel Cantero Víllora
 
-<u>Tutores</u>:
+<u>Tutores / Supervisors</u>:
 * José Antonio Gámez Martín
 * Juan Ángel Aledo Sánchez
 
 <br>
-
-## Tecnologías empleadas
-
-### Lenguajes
-* __Python__: Ciencia de datos y servicio web
-* __HTML__ y __C#__: Aplicación web 
-
-<br>
-
-### Herramientas de desarrollo 
-* __Jupyter Notebook__: Entorno de programación interactivo, mediante el cual podemos introducir texto en formato _markdown_ junto a código _Python_ haciendo uso de los _notebooks_ o libretas.
-* __Visual Studio Code__: Conocido editor de código de _Microsoft_, el cual ha sido empleado a la hora de visualizar los archivos creados para almacenar los datos, tanto en formato _CSV_ como _JSON_, para el desarrollo de scripts empleados para ejecutar los procesos relacionados con la recopilación de datos y el entrenamiento del modelo, y para desarrollar la aplicación web y la _API REST_.
-
-<br>
-
-### Bibliotecas
-* __Spotipy__: Biblioteca de Python para usar la WebAPI de Spotify.
-* __Numpy__: Ofrece mayor soporte a vectores y matrices, constituyendo una biblioteca de funciones matemáticas de alto nivel para operar con estos elementos.
-* __Pandas__: Es una biblioteca de código abierto para Python que proporciona estructuras de datos y herramientas de análisis de alto rendimiento y fáciles de emplear.
-* __NLTK__: Este toolkit es una de las bibliotecas más potentes para procesamiento del lenguaje natural.
-* __SciPy__: Biblioteca de código abierto basada en Python, que se utiliza en matemáticas,
-ciencia e ingeniería.
-* __Scikit-Learn__: Biblioteca empleada para problemas de aprendizaje automático o machine learning.
-* __LightFM__: Es una biblioteca que contiene numerosos algoritmos utilizados en los sistemas de recomendación.
-* __Azure SDK__: Conjunto de herramientas para emplear los servicios creados en _Microsoft Azure_.
-* __.NET 5__: Framework multiplataforma gratuito y open source que nos permite el desarrollo de aplicaciónes. En particular utilizaremos Blazor, que viene integrado en el
-framework ,y es un completo marco de trabajo para compilar aplicaciones web.
-
-<br>
-
-### Servicios en la nube
-Para desplegar la infraestructura, se ha utilizado _Microsoft Azure_ como proveedor de servicios en la nube. Los servicios empleados son los siguientes:
-* __Azure Machine Learning Studio__: Área de trabajo que incorpora todos los elementos necesarios para realizar proyectos de _machine learning_, como por ejemplo: libretas _Jupyter_ (incorporando un entorno propio para ejecutarlas), colecciones de modelos,experimentos, instancias de cómputo, etc.
-* __Virtual Machines__: Uso de máquinas virtuales en la nube.
-* __Azure Cosmos DB__: Base de datos _NoSQL_, de acceso rápido y con alta disponibilidad, respaldadas por un Acuerdo de Nivel de Servicio, escalabilidad automática e instantánea.
-* __Azure Functions__: Servicio que proporciona toda la infraestructura y los recursos, que se actualizan continuamente, necesarios para ejecutar aplicaciones.
-* __API Managment__: Espacio de trabajo donde podemos configurar distintas _APIs_ (propias o de terceros) añadiendo una capa de abstracción que unifica el acceso de desarrolladores a ellas.
-* __Azure Blob Storage__: Solución de almacenamiento de objetos en la nube.
-* __Azure DevOps__: Servicio que proporciona control de versiones, informes, gestión de
-requisitos, gestión de proyectos, compilaciones automatizadas, pruebas y capacidades de gestión de versiones.
