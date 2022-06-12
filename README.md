@@ -3,10 +3,10 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-    <img src="media/SerendipityLogo.png" alt="Logo" height="64">
+    <img src="media/SerendipityLogo.png" alt="Logo" height="72">
   </a>
 
-  <h3 align="center">Servicio web para la recomendación de playlists a partir de otra playlist</h3>
+  <h1 align="center">Servicio web para la recomendación de playlists a partir de otra playlist (<i>Web service for recommending playlists from a playlist</i>)</h1>
 
   <p align="center">
     TFM para el <a href="https://www.uclm.es/estudios/masteres/master-ingenieria-informatica-albacete">Máster Universitario en Ingeniería Informática</a> de la <a href="https://www.uclm.es">Universidad de Castilla-La Mancha</a>
@@ -49,7 +49,7 @@ The main aim of this project is to provide a system that, given a playlist, thro
 
 <br>
 
-### Autor / Author
+## Autor / Author
 <u>Alumno / Student </u>:
 * Miguel Ángel Cantero Víllora
 
